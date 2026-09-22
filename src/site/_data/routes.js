@@ -42,5 +42,14 @@ async function fetchRoutes(page) {
 
 
 module.exports = async function() {
-  return await fetchRoutes(1)
+  if (!process.env.ROUTES_FORM_ID || !process.env.API_AUTH) {
+    console.warn('ROUTES_FORM_ID / API_AUTH not set, building with no routes.');
+    return [];
+  }
+  try {
+    return await fetchRoutes(1);
+  } catch (e) {
+    console.warn(`Failed to fetch routes, building with no routes: ${e.message}`);
+    return [];
+  }
 };
