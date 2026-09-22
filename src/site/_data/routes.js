@@ -12,7 +12,6 @@ const isValidUrl = (url) => {
 
 
 const baseURL = `https://api.netlify.com/api/v1/forms/${process.env.ROUTES_FORM_ID}/submissions?access_token=${process.env.API_AUTH}`;
-let routes = [];
 let formatted = [];
 
 async function fetchRoutes(page) {
@@ -23,24 +22,32 @@ async function fetchRoutes(page) {
 
   console.log(`fetching`, url);
 
-  if (data.length) {
-    return routes.concat(await fetchRoutes(page + 1));
-  } else {
-    // format the result to return
-    for (const item of data) {
-      if (isValidUrl(item.data.destination)) {
-        formatted.push({
-          from: item.data.code,
-          to: item.data.destination
-        });
-      }
-    }
+  if (!data.length) {
     return formatted;
   }
 
+  for (const item of data) {
+    if (isValidUrl(item.data.destination)) {
+      formatted.push({
+        from: item.data.code,
+        to: item.data.destination
+      });
+    }
+  }
+
+  return fetchRoutes(page + 1);
 }
 
 
 module.exports = async function() {
-  return await fetchRoutes(1)
+  if (!process.env.ROUTES_FORM_ID || !process.env.API_AUTH) {
+    console.warn('ROUTES_FORM_ID / API_AUTH not set, building with no routes.');
+    return [];
+  }
+  try {
+    return await fetchRoutes(1);
+  } catch (e) {
+    console.warn(`Failed to fetch routes, building with no routes: ${e.message}`);
+    return [];
+  }
 };
