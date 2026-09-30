@@ -14,6 +14,7 @@
   --header-from: #{$brand-ink};
   --header-to: #{$brand-blue};
   --shadow: 0 8px 24px -12px rgba(0, 0, 0, 0.18);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -107,10 +108,12 @@ form {
     border-radius: 8px;
     background-color: var(--surface);
     color: var(--text);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 
-    &:hover {
-      border-color: var(--text-muted);
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        border-color: var(--text-muted);
+      }
     }
 
     &:focus-visible {
@@ -132,11 +135,13 @@ form {
     border-radius: 8px;
     background-color: var(--accent);
     color: var(--accent-contrast);
-    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    transition: background-color 0.15s ease, transform 0.12s var(--ease-out), box-shadow 0.15s ease;
 
-    &:hover {
-      background-color: var(--accent-hover);
-      cursor: pointer;
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background-color: var(--accent-hover);
+        cursor: pointer;
+      }
     }
 
     &:focus-visible {
@@ -181,13 +186,21 @@ a {
     border-bottom-style: dotted;
     border-bottom-width: 1px;
     border-bottom-color: var(--border);
+    transition: color 0.15s ease, border-bottom-color 0.15s ease;
   }
-  &:hover,
   &:focus-visible {
     text-decoration: none;
     color: var(--accent-hover);
     border-bottom-style: solid;
     border-bottom-color: var(--accent-hover);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      text-decoration: none;
+      color: var(--accent-hover);
+      border-bottom-style: solid;
+      border-bottom-color: var(--accent-hover);
+    }
   }
 }
 
@@ -216,11 +229,11 @@ a.btn-dtn {
 @media (prefers-reduced-motion: no-preference) {
   header,
   form {
-    animation: rise-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: rise-in 0.4s var(--ease-out) both;
   }
 
   form {
-    animation-delay: 0.08s;
+    animation-delay: 0.06s;
   }
 }
 
