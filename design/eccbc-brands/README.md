@@ -12,13 +12,14 @@ A concept for the ECCBC "Our products" page, using patterns from Coca-Cola bottl
 - Product shots (`src/assets/products/`), full-colour logos (`src/assets/logos-colour/`) and brand descriptions for the 7 ECCBC brands that also appear on https://www.coca-colacompany.com/brands/all-brands: Coca-Cola, Fanta, Sprite, Schweppes, Aquarius, Ciel, Minute Maid. Ciel has no description there. Images were trimmed of transparent padding.
 - The other 17 brands (local and partner brands such as Hawai, Voltic, Predator, Monster) are not on that page, so they use the eccbc.com logo only.
 - Pack photos for 12 brands (`src/assets/packs/`) and the official ECCBC logo come from the eccbc.com homepage product slider. These are preferred over the Coca-Cola Company shots where both exist.
-- 10 brands still have no pack photo: Bonaqua, Monster, Tops, Cappy, Cappy Pulpy, Vimto, Sparletta, Parrot, Predator, Power Play. Their pages show the logo.
+- Pack photos for Bonaqua, Monster, Cappy Pulpy, Vimto and Predator were supplied by the client (Monster and Vimto had white backgrounds, cut out here).
+- 5 brands still have no pack photo: Tops, Cappy, Sparletta, Parrot, Power Play. Their pages show the logo.
 - Tile tint colours and the "moments" groupings are design choices, not from eccbc.com.
 - No flavours or pack sizes are listed: eccbc.com does not publish them, so the brand panel says they vary by country.
 
 ## Before going live
 - Swap the text wordmark for the official ECCBC logo.
-- Pack photos for the 10 brands above.
+- Pack photos for the 5 brands above.
 - Check usage rights for Coca-Cola Company imagery with the brand team before publishing.
 
 ## Structure
