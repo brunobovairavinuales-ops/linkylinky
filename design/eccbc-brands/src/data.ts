@@ -21,8 +21,11 @@ const logo = (file: string) => logoFiles[`./assets/logos/${file}.svg`];
 
 // Product shots and full-colour logos for the brands listed on The Coca-Cola Company's
 // all-brands page (https://www.coca-colacompany.com/brands/all-brands).
-const shotFiles = import.meta.glob("./assets/products/*.png", { eager: true, query: "?url", import: "default" }) as Record<string, string>;
+const shotFiles = import.meta.glob("./assets/products/*.webp", { eager: true, query: "?url", import: "default" }) as Record<string, string>;
 const colourLogoFiles = import.meta.glob("./assets/logos-colour/*.png", { eager: true, query: "?url", import: "default" }) as Record<string, string>;
+
+// Pack photos from the eccbc.com homepage product slider (https://www.eccbc.com/).
+const packFiles = import.meta.glob("./assets/packs/*.webp", { eager: true, query: "?url", import: "default" }) as Record<string, string>;
 
 // Brand descriptions quoted from the same Coca-Cola Company page.
 const stories: Record<string, string[]> = {
@@ -62,6 +65,8 @@ export type Brand = {
   colourLogo?: string;
   /** Description paragraphs from The Coca-Cola Company */
   story?: string[];
+  /** Pack photo from eccbc.com */
+  pack?: string;
 };
 
 const b = (id: string, name: string, cats: CategoryId[], file: string, color: string, featured = false): Brand => ({
@@ -71,9 +76,10 @@ const b = (id: string, name: string, cats: CategoryId[], file: string, color: st
   logo: logo(file),
   color,
   featured,
-  shot: shotFiles[`./assets/products/${id}.png`],
+  shot: shotFiles[`./assets/products/${id}.webp`],
   colourLogo: colourLogoFiles[`./assets/logos-colour/${id}.png`],
   story: stories[id],
+  pack: packFiles[`./assets/packs/${id}.webp`],
 });
 
 // Same order as eccbc.com
@@ -103,6 +109,10 @@ export const brands: Brand[] = [
   b("minute-maid", "Minute Maid", ["soft-drinks"], "Minute_Maid_Logo", "#00843D"),
   b("voltic", "Voltic", ["water"], "Voltic_logo", "#0057A8"),
 ];
+
+/** Best product picture: eccbc.com pack photo, else Coca-Cola Company product shot */
+export const heroImage = (x: Brand) => x.pack ?? x.shot;
+export const withPictures = () => brands.filter((x) => heroImage(x));
 
 export const globalBrands = () => brands.filter((x) => x.shot);
 

@@ -12,9 +12,13 @@ import {
   ShieldCheck,
   Recycle,
 } from "@phosphor-icons/react";
-import { brands, byId, categories, globalBrands, inCategory, intro, moments, type Brand, type CategoryId } from "@/data";
+import { brands, byId, categories, globalBrands, heroImage, inCategory, intro, moments, type Brand, type CategoryId } from "@/data";
 import { BrandLogo, ProductShot } from "@/components/BrandLogo";
-import { BrandSheet } from "@/components/BrandSheet";
+import { ProductSlider } from "@/components/ProductSlider";
+import { BrandPage } from "@/pages/BrandPage";
+import { brandHref, useRoute } from "@/router";
+import eccbcLogo from "@/assets/eccbc_logo.png";
+import eccbcLogoAlt from "@/assets/eccbc_logo_alt.png";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -39,6 +43,15 @@ function useTheme() {
   return [theme, setTheme] as const;
 }
 
+function EccbcLogo({ size }: { size: number }) {
+  return (
+    <>
+      <img src={eccbcLogo} alt="Equatorial Coca-Cola Bottling Company" className="eccbc-logo is-light" style={{ height: size, width: "auto" }} />
+      <img src={eccbcLogoAlt} alt="" aria-hidden className="eccbc-logo is-dark" style={{ height: size, width: "auto" }} />
+    </>
+  );
+}
+
 const navLinks = ["About us", "Our products", "Sustainability", "Careers", "News"];
 
 function Nav({ theme, onToggle }: { theme: string; onToggle: () => void }) {
@@ -47,9 +60,7 @@ function Nav({ theme, onToggle }: { theme: string; onToggle: () => void }) {
     <header className="nav">
       <div className="mx-auto flex h-16 max-w-[1320px] items-center justify-between gap-6 px-4 sm:px-6 lg:px-10">
         <a href="#" className="flex items-center gap-2" aria-label="ECCBC home">
-          {/* Swap for the official ECCBC logo file */}
-          <span className="logo-mark" aria-hidden />
-          <span className="font-display text-xl font-extrabold tracking-tight">ECCBC</span>
+          <EccbcLogo size={48} />
         </a>
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Main">
           {navLinks.map((l) => (
@@ -93,75 +104,6 @@ function Nav({ theme, onToggle }: { theme: string; onToggle: () => void }) {
   );
 }
 
-function Hero({ onOpen }: { onOpen: (id: string) => void }) {
-  const lineup = ["ciel", "fanta", "sprite", "coca-cola", "schweppes", "minute-maid", "aquarius"].map((id) => byId[id]);
-  return (
-    <section className="mx-auto grid max-w-[1320px] grid-cols-1 items-center gap-10 px-4 pb-16 pt-10 sm:px-6 md:pt-16 lg:grid-cols-[1.05fr_1fr] lg:gap-16 lg:px-10 lg:pb-24">
-      <motion.div
-        initial="hidden"
-        animate="show"
-        variants={{ show: { transition: { staggerChildren: 0.08 } } }}
-        className="flex flex-col gap-6"
-      >
-        <motion.p variants={fade} className="eyebrow">Our products</motion.p>
-        <motion.h1 variants={fade} className="font-display text-[2.6rem] font-extrabold leading-[1.02] tracking-tight sm:text-6xl lg:text-[4.4rem]">
-          Brands people love, <span className="text-[var(--accent)]">bottled close to home.</span>
-        </motion.h1>
-        <motion.p variants={fade} className="max-w-[46ch] text-lg leading-relaxed text-[var(--muted)]">
-          {intro.lead}
-        </motion.p>
-        <motion.div variants={fade} className="flex flex-wrap gap-3">
-          <a href="#brands" className="btn btn-primary btn-lg">
-            Explore brands <ArrowRight size={18} weight="bold" />
-          </a>
-          <a href="#commitments" className="btn btn-ghost btn-lg">
-            Our commitments
-          </a>
-        </motion.div>
-      </motion.div>
-
-      <div className="hero-stage">
-        <div className="hero-disc" />
-        <div className="hero-lineup">
-          {lineup.map((b, i) => {
-            const centre = Math.floor(lineup.length / 2);
-            const d = Math.abs(i - centre);
-            return (
-              <motion.button
-                key={b.id}
-                onClick={() => onOpen(b.id)}
-                initial={{ y: 120, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ type: "spring", stiffness: 100, damping: 14, delay: 0.25 + d * 0.09 }}
-                whileHover={{ y: -14, rotate: i < centre ? -3 : 3 }}
-                aria-label={`View ${b.name}`}
-                className="shrink"
-              >
-                <ProductShot brand={b} height={d === 0 ? 230 : 196 - d * 14} className="hero-shot" />
-              </motion.button>
-            );
-          })}
-        </div>
-        <div className="hero-shelf" />
-        <motion.a
-          href="#brands"
-          className="hero-count"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.9 }}
-        >
-          + {brands.length - lineup.length} more brands in our portfolio <ArrowRight size={16} weight="bold" />
-        </motion.a>
-      </div>
-    </section>
-  );
-}
-
-const fade = {
-  hidden: { opacity: 0, y: 18 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease } },
-};
-
 function BrandTile({ brand, big, onOpen }: { brand: Brand; big: boolean; onOpen: () => void }) {
   return (
     <motion.button
@@ -176,13 +118,13 @@ function BrandTile({ brand, big, onOpen }: { brand: Brand; big: boolean; onOpen:
     >
       <div className="tile-stage">
         <div className="tile-glow" />
-        {brand.shot ? (
+        {heroImage(brand) ? (
           <>
             <span className="tile-logo-chip">
-              <BrandLogo brand={brand} height={big ? 48 : 30} colour={!big} className={big ? "on-colour" : ""} />
+              <BrandLogo brand={brand} height={big ? 48 : 30} colour={!big} className={big ? "on-colour" : "on-white"} />
             </span>
             <div className="tile-shot">
-              <ProductShot brand={brand} height={big ? 330 : 170} />
+              <img src={heroImage(brand)} alt={`${brand.name} products`} className="tile-img" style={{ height: big ? 340 : 170 }} draggable={false} />
             </div>
           </>
         ) : (
@@ -412,10 +354,7 @@ function Footer() {
     <footer id="contact" className="border-t border-[var(--line)]">
       <div className="mx-auto grid max-w-[1320px] grid-cols-1 gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr] lg:px-10">
         <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-2">
-            <span className="logo-mark" aria-hidden />
-            <span className="font-display text-xl font-extrabold tracking-tight">ECCBC</span>
-          </div>
+          <EccbcLogo size={72} />
           <p className="max-w-[40ch] text-sm text-[var(--muted)]">
             Equatorial Coca-Cola Bottling Company. {intro.market}
           </p>
@@ -465,21 +404,34 @@ function Reveal({ children, className }: { children: React.ReactNode; className?
 
 export default function App() {
   const [theme, setTheme] = useTheme();
-  const [openId, setOpenId] = useState<string | null>(null);
-  const open = (id: string) => setOpenId(id);
+  const route = useRoute();
+  const open = (id: string) => {
+    window.location.hash = brandHref(id);
+  };
+
+  // On the home page, scroll to the anchor in the hash (e.g. #brands) after render.
+  useEffect(() => {
+    if (route.name !== "home") return;
+    if (!route.anchor) return;
+    const t = setTimeout(() => document.getElementById(route.anchor!)?.scrollIntoView(), 30);
+    return () => clearTimeout(t);
+  }, [route]);
 
   return (
     <MotionConfig reducedMotion="user">
       <Nav theme={theme} onToggle={() => setTheme(theme === "dark" ? "light" : "dark")} />
-      <main>
-        <Hero onOpen={open} />
-        <Portfolio onOpen={open} />
-        <GlobalIcons onOpen={open} />
-        <Moments onOpen={open} />
-        <Commitments />
-      </main>
+      {route.name === "brand" ? (
+        <BrandPage key={route.id} id={route.id} />
+      ) : (
+        <main>
+          <ProductSlider />
+          <Portfolio onOpen={open} />
+          <GlobalIcons onOpen={open} />
+          <Moments onOpen={open} />
+          <Commitments />
+        </main>
+      )}
       <Footer />
-      <BrandSheet brand={openId ? byId[openId] : null} onOpenChange={(o) => !o && setOpenId(null)} onSelect={open} />
     </MotionConfig>
   );
 }
