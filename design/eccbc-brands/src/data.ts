@@ -19,6 +19,35 @@ export const categories: Category[] = [
 const logoFiles = import.meta.glob("./assets/logos/*.svg", { eager: true, query: "?url", import: "default" }) as Record<string, string>;
 const logo = (file: string) => logoFiles[`./assets/logos/${file}.svg`];
 
+// Product shots and full-colour logos for the brands listed on The Coca-Cola Company's
+// all-brands page (https://www.coca-colacompany.com/brands/all-brands).
+const shotFiles = import.meta.glob("./assets/products/*.png", { eager: true, query: "?url", import: "default" }) as Record<string, string>;
+const colourLogoFiles = import.meta.glob("./assets/logos-colour/*.png", { eager: true, query: "?url", import: "default" }) as Record<string, string>;
+
+// Brand descriptions quoted from the same Coca-Cola Company page.
+const stories: Record<string, string[]> = {
+  "coca-cola": [
+    "Since 1886, Coca-Cola has been the unmistakable taste of togetherness. It’s the classic, refreshing pause during a celebration, the perfect companion for quiet moments, and the spark between loved ones. More than a soda, it’s the delicious, iconic way to make any moment feel real.",
+  ],
+  fanta: [
+    "Our second oldest brand, the Fanta we know and love today emerged in Naples, Italy, in 1955 as a delicious Orange flavored soft drink. The name was chosen because it meant the same meaning \"fantastic\" in most languages.",
+    "Today Fanta is available in over 100 flavors across 180 countries, with Fanta Orange remaining the most popular.",
+  ],
+  sprite: [
+    "Sprite® is the world’s No. 1 lemon-lime soft drink.",
+    "With its crisp lemon-lime taste, Sprite is the ultimate refreshment with the freshest take on culture.",
+  ],
+  schweppes: [
+    "Schweppes® was created in 1783 by Jacob Schweppe, who developed the first process to capture carbonation in a bottle. With more than 230 years of heritage, Schweppes offers a range of premium mixers, flavored sodas and sparkling waters enjoyed throughout the world.",
+  ],
+  aquarius: [
+    "AQUARIUS® is a functional hydration drink developed in 1983 in Japan to help people rehydrate and replace minerals lost during physical activity. With a refreshing taste and added electrolytes, AQUARIUS® is designed for those who lead active lifestyles.",
+  ],
+  "minute-maid": [
+    "Minute Maid® has been making juice and drinks for more than 80 years, we pride ourselves on our history of providing quality products to families around the world.",
+  ],
+};
+
 export type Brand = {
   id: string;
   name: string;
@@ -27,6 +56,12 @@ export type Brand = {
   /** Tint for the brand tile */
   color: string;
   featured?: boolean;
+  /** Transparent product shot (global brands only) */
+  shot?: string;
+  /** Full-colour logo (global brands only) */
+  colourLogo?: string;
+  /** Description paragraphs from The Coca-Cola Company */
+  story?: string[];
 };
 
 const b = (id: string, name: string, cats: CategoryId[], file: string, color: string, featured = false): Brand => ({
@@ -36,6 +71,9 @@ const b = (id: string, name: string, cats: CategoryId[], file: string, color: st
   logo: logo(file),
   color,
   featured,
+  shot: shotFiles[`./assets/products/${id}.png`],
+  colourLogo: colourLogoFiles[`./assets/logos-colour/${id}.png`],
+  story: stories[id],
 });
 
 // Same order as eccbc.com
@@ -65,6 +103,8 @@ export const brands: Brand[] = [
   b("minute-maid", "Minute Maid", ["soft-drinks"], "Minute_Maid_Logo", "#00843D"),
   b("voltic", "Voltic", ["water"], "Voltic_logo", "#0057A8"),
 ];
+
+export const globalBrands = () => brands.filter((x) => x.shot);
 
 export const byId = Object.fromEntries(brands.map((x) => [x.id, x])) as Record<string, Brand>;
 export const categoryLabel = (id: CategoryId) => categories.find((c) => c.id === id)?.label ?? id;

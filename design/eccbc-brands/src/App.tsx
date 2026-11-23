@@ -12,8 +12,8 @@ import {
   ShieldCheck,
   Recycle,
 } from "@phosphor-icons/react";
-import { brands, byId, categories, inCategory, intro, moments, type Brand, type CategoryId } from "@/data";
-import { BrandLogo } from "@/components/BrandLogo";
+import { brands, byId, categories, globalBrands, inCategory, intro, moments, type Brand, type CategoryId } from "@/data";
+import { BrandLogo, ProductShot } from "@/components/BrandLogo";
 import { BrandSheet } from "@/components/BrandSheet";
 
 const ease = [0.16, 1, 0.3, 1] as const;
@@ -94,7 +94,7 @@ function Nav({ theme, onToggle }: { theme: string; onToggle: () => void }) {
 }
 
 function Hero({ onOpen }: { onOpen: (id: string) => void }) {
-  const lineup = ["coca-cola", "fanta", "sprite", "schweppes", "monster", "voltic"].map((id) => byId[id]);
+  const lineup = ["ciel", "fanta", "sprite", "coca-cola", "schweppes", "minute-maid", "aquarius"].map((id) => byId[id]);
   return (
     <section className="mx-auto grid max-w-[1320px] grid-cols-1 items-center gap-10 px-4 pb-16 pt-10 sm:px-6 md:pt-16 lg:grid-cols-[1.05fr_1fr] lg:gap-16 lg:px-10 lg:pb-24">
       <motion.div
@@ -122,22 +122,27 @@ function Hero({ onOpen }: { onOpen: (id: string) => void }) {
 
       <div className="hero-stage">
         <div className="hero-disc" />
-        <div className="hero-logos">
-          {lineup.map((b, i) => (
-            <motion.button
-              key={b.id}
-              onClick={() => onOpen(b.id)}
-              initial={{ y: 60, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ type: "spring", stiffness: 110, damping: 15, delay: 0.25 + i * 0.07 }}
-              whileHover={{ y: -8, rotate: i % 2 ? 2 : -2 }}
-              className="hero-card"
-              aria-label={`View ${b.name}`}
-            >
-              <BrandLogo brand={b} height={56} className="on-white" />
-            </motion.button>
-          ))}
+        <div className="hero-lineup">
+          {lineup.map((b, i) => {
+            const centre = Math.floor(lineup.length / 2);
+            const d = Math.abs(i - centre);
+            return (
+              <motion.button
+                key={b.id}
+                onClick={() => onOpen(b.id)}
+                initial={{ y: 120, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ type: "spring", stiffness: 100, damping: 14, delay: 0.25 + d * 0.09 }}
+                whileHover={{ y: -14, rotate: i < centre ? -3 : 3 }}
+                aria-label={`View ${b.name}`}
+                className="shrink"
+              >
+                <ProductShot brand={b} height={d === 0 ? 230 : 196 - d * 14} className="hero-shot" />
+              </motion.button>
+            );
+          })}
         </div>
+        <div className="hero-shelf" />
         <motion.a
           href="#brands"
           className="hero-count"
@@ -145,7 +150,7 @@ function Hero({ onOpen }: { onOpen: (id: string) => void }) {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.9 }}
         >
-          + {brands.length - lineup.length} more brands <ArrowRight size={16} weight="bold" />
+          + {brands.length - lineup.length} more brands in our portfolio <ArrowRight size={16} weight="bold" />
         </motion.a>
       </div>
     </section>
@@ -171,9 +176,20 @@ function BrandTile({ brand, big, onOpen }: { brand: Brand; big: boolean; onOpen:
     >
       <div className="tile-stage">
         <div className="tile-glow" />
-        <div className="tile-pack">
-          <BrandLogo brand={brand} height={big ? 120 : 64} className={big ? "on-colour" : ""} />
-        </div>
+        {brand.shot ? (
+          <>
+            <span className="tile-logo-chip">
+              <BrandLogo brand={brand} height={big ? 48 : 30} colour={!big} className={big ? "on-colour" : ""} />
+            </span>
+            <div className="tile-shot">
+              <ProductShot brand={brand} height={big ? 330 : 170} />
+            </div>
+          </>
+        ) : (
+          <div className="tile-pack">
+            <BrandLogo brand={brand} height={big ? 120 : 64} className={big ? "on-colour" : ""} />
+          </div>
+        )}
       </div>
       <div className="flex items-end justify-between gap-3 p-5 text-left">
         <div className="flex min-w-0 flex-col gap-1">
@@ -266,6 +282,46 @@ function Portfolio({ onOpen }: { onOpen: (id: string) => void }) {
   );
 }
 
+function GlobalIcons({ onOpen }: { onOpen: (id: string) => void }) {
+  const list = globalBrands();
+  return (
+    <section className="icons-band py-20 sm:py-24" aria-labelledby="icons-title">
+      <div className="mx-auto max-w-[1320px] px-4 sm:px-6 lg:px-10">
+        <Reveal className="mb-10 flex flex-col gap-3">
+          <p className="eyebrow">Global icons</p>
+          <h2 id="icons-title" className="font-display text-3xl font-extrabold tracking-tight sm:text-5xl">
+            World-famous brands, <span className="text-[var(--accent)]">bottled locally.</span>
+          </h2>
+          <p className="max-w-[60ch] text-white/70">
+            {list.length} of our brands are global brands of The Coca-Cola Company, produced and distributed by ECCBC in our markets.
+          </p>
+        </Reveal>
+        <div className="icons-track" tabIndex={0} aria-label="Global brands">
+          {list.map((b, i) => (
+            <motion.button
+              key={b.id}
+              onClick={() => onOpen(b.id)}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.6, delay: i * 0.06, ease }}
+              className="icon-card"
+              style={{ "--tint": b.color } as React.CSSProperties}
+            >
+              <span className="logo-pill"><BrandLogo brand={b} height={36} colour className="on-white" /></span>
+              {b.story && <p className="line-clamp-3 text-sm leading-relaxed text-white/75">{b.story[0]}</p>}
+              <div className="shot-wrap"><ProductShot brand={b} height={240} /></div>
+              <span className="inline-flex items-center gap-2 font-display text-sm font-bold">
+                Discover {b.name} <ArrowRight size={16} weight="bold" />
+              </span>
+            </motion.button>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function Moments({ onOpen }: { onOpen: (id: string) => void }) {
   return (
     <section className="pb-24">
@@ -301,7 +357,7 @@ function Moments({ onOpen }: { onOpen: (id: string) => void }) {
             <div className="moment-packs" aria-hidden>
               {m.brandIds.slice(0, 3).map((id, j) => (
                 <div key={id} className="moment-badge" style={{ transform: `translateY(${j === 1 ? -12 : 0}px) rotate(${(j - 1) * 5}deg)` }}>
-                  <BrandLogo brand={byId[id]} height={40} className="on-white" />
+                  <BrandLogo brand={byId[id]} height={40} colour className="on-white" />
                 </div>
               ))}
             </div>
@@ -418,6 +474,7 @@ export default function App() {
       <main>
         <Hero onOpen={open} />
         <Portfolio onOpen={open} />
+        <GlobalIcons onOpen={open} />
         <Moments onOpen={open} />
         <Commitments />
       </main>

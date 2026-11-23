@@ -2,7 +2,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { ArrowLeft, ArrowRight, ArrowUpRight, X, MapPin } from "@phosphor-icons/react";
 import { motion, AnimatePresence } from "motion/react";
 import { brands, categoryLabel, type Brand } from "@/data";
-import { BrandLogo } from "./BrandLogo";
+import { BrandLogo, ProductShot } from "./BrandLogo";
 
 type Props = {
   brand: Brand | null;
@@ -35,7 +35,7 @@ export function BrandSheet({ brand, onOpenChange, onSelect }: Props) {
                 className="flex min-h-full flex-col"
               >
                 <div
-                  className="relative flex h-72 shrink-0 items-center justify-center overflow-hidden"
+                  className={`relative flex shrink-0 justify-center overflow-hidden ${brand.shot ? "h-80 items-end pb-4" : "h-72 items-center"}`}
                   style={{ background: `color-mix(in srgb, ${brand.color} 22%, var(--surface))` }}
                 >
                   <div
@@ -46,9 +46,18 @@ export function BrandSheet({ brand, onOpenChange, onSelect }: Props) {
                     initial={{ y: 30, scale: 0.92, opacity: 0 }}
                     animate={{ y: 0, scale: 1, opacity: 1 }}
                     transition={{ type: "spring", stiffness: 120, damping: 16 }}
-                    className="relative grid h-40 w-64 place-items-center rounded-2xl bg-white p-6 shadow-xl"
+                    className={brand.shot ? "relative flex items-end gap-4" : "relative grid h-40 w-64 place-items-center rounded-2xl bg-white p-6 shadow-xl"}
                   >
-                    <BrandLogo brand={brand} height={110} className="on-white" />
+                    {brand.shot ? (
+                      <>
+                        <ProductShot brand={brand} height={230} />
+                        <span className="mb-10 grid place-items-center rounded-2xl bg-white px-4 py-3 shadow-xl">
+                          <BrandLogo brand={brand} height={48} colour className="on-white" />
+                        </span>
+                      </>
+                    ) : (
+                      <BrandLogo brand={brand} height={110} className="on-white" />
+                    )}
                   </motion.div>
                   <Dialog.Close className="icon-btn absolute right-4 top-4" aria-label="Close">
                     <X size={18} weight="bold" />
@@ -66,6 +75,15 @@ export function BrandSheet({ brand, onOpenChange, onSelect }: Props) {
                       ))}
                     </div>
                   </div>
+
+                  {brand.story && (
+                    <div className="flex flex-col gap-3">
+                      {brand.story.map((para) => (
+                        <p key={para.slice(0, 24)} className="max-w-[60ch] leading-relaxed">{para}</p>
+                      ))}
+                      <p className="text-xs text-[var(--muted)]">Source: The Coca-Cola Company</p>
+                    </div>
+                  )}
 
                   <p className="flex max-w-[60ch] items-start gap-3 rounded-2xl bg-[var(--sunken)] p-4 text-sm leading-relaxed text-[var(--muted)]">
                     <MapPin size={20} className="mt-0.5 shrink-0 text-[var(--accent)]" />
@@ -87,7 +105,7 @@ export function BrandSheet({ brand, onOpenChange, onSelect }: Props) {
                             className="related-tile"
                             style={{ background: `color-mix(in srgb, ${r.color} 14%, var(--surface))` }}
                           >
-                            <span className="grid h-14 w-full place-items-center rounded-xl bg-white p-2"><BrandLogo brand={r} height={40} className="on-white" /></span>
+                            <span className="grid h-14 w-full place-items-center rounded-xl bg-white p-2"><BrandLogo brand={r} height={40} colour className="on-white" /></span>
                             <span className="text-xs font-semibold leading-tight">{r.name}</span>
                           </button>
                         ))}
