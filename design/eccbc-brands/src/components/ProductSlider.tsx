@@ -28,15 +28,12 @@ export function ProductSlider() {
   return (
     <section className="slider" aria-roledescription="carousel" aria-label="Our products" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
       <div className="slider-wave" aria-hidden />
-      <div className="mx-auto max-w-[1320px] px-4 pt-8 sm:px-6 lg:px-10">
-        <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="eyebrow text-center">
-          Our products
-        </motion.p>
+      <div className="mx-auto max-w-[1320px] px-4 pt-6 sm:px-6 lg:px-10">
         <motion.h1
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05, duration: 0.7, ease }}
-          className="mx-auto mt-3 max-w-[18ch] text-center font-display text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl"
+          className="mx-auto max-w-[24ch] text-center font-display text-3xl font-extrabold leading-[1.08] tracking-tight sm:text-5xl"
         >
           Brands people love, <span className="text-[var(--accent)]">bottled close to home.</span>
         </motion.h1>
@@ -100,7 +97,7 @@ export function ProductSlider() {
         </button>
       </div>
 
-      <div className="mx-auto flex max-w-[1320px] flex-col items-center gap-5 px-4 pb-14 sm:px-6 lg:px-10">
+      <div className="mx-auto flex max-w-[1320px] flex-col items-center gap-4 px-4 pb-12 sm:px-6 lg:px-10">
         <AnimatePresence mode="wait">
           <motion.div
             key={b.id}
@@ -108,10 +105,10 @@ export function ProductSlider() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.3 }}
-            className="flex flex-col items-center gap-3 text-center"
+            className="flex flex-col items-center gap-2 text-center"
           >
             <span className="text-sm font-semibold text-[var(--muted)]">{b.categories.map(categoryLabel).join(" · ")}</span>
-            <h2 className="font-display text-3xl font-extrabold tracking-tight sm:text-4xl">{b.name}</h2>
+            <h2 className="font-display text-2xl font-extrabold tracking-tight sm:text-3xl">{b.name}</h2>
             <a href={brandHref(b.id)} className="btn btn-primary">
               Discover {b.name} <ArrowRight size={16} weight="bold" />
             </a>

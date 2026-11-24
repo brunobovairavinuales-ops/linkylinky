@@ -203,7 +203,7 @@ function Portfolio({ onOpen }: { onOpen: (id: string) => void }) {
                     Retailers, restaurants and wholesalers can order directly from our local teams.
                   </span>
                   <span className="mt-auto inline-flex items-center gap-2 font-display text-sm font-bold">
-                    Become a customer <ArrowRight size={16} weight="bold" />
+                    Contact us <ArrowRight size={16} weight="bold" />
                   </span>
                 </motion.a>
               )}
@@ -230,11 +230,10 @@ function GlobalIcons({ onOpen }: { onOpen: (id: string) => void }) {
     <section className="icons-band py-20 sm:py-24" aria-labelledby="icons-title">
       <div className="mx-auto max-w-[1320px] px-4 sm:px-6 lg:px-10">
         <Reveal className="mb-10 flex flex-col gap-3">
-          <p className="eyebrow">Global icons</p>
           <h2 id="icons-title" className="font-display text-3xl font-extrabold tracking-tight sm:text-5xl">
             World-famous brands, <span className="text-[var(--accent)]">bottled locally.</span>
           </h2>
-          <p className="max-w-[60ch] text-white/70">
+          <p className="max-w-[60ch] text-[var(--muted)]">
             {list.length} of our brands are global brands of The Coca-Cola Company, produced and distributed by ECCBC in our markets.
           </p>
         </Reveal>
@@ -251,7 +250,7 @@ function GlobalIcons({ onOpen }: { onOpen: (id: string) => void }) {
               style={{ "--tint": b.color } as React.CSSProperties}
             >
               <span className="logo-pill"><BrandLogo brand={b} height={36} colour className="on-white" /></span>
-              {b.story && <p className="line-clamp-3 text-sm leading-relaxed text-white/75">{b.story[0]}</p>}
+              {b.story && <p className="line-clamp-3 text-sm leading-relaxed text-[var(--muted)]">{b.story[0]}</p>}
               <div className="shot-wrap"><ProductShot brand={b} height={240} /></div>
               <span className="inline-flex items-center gap-2 font-display text-sm font-bold">
                 Discover {b.name} <ArrowRight size={16} weight="bold" />
@@ -266,45 +265,44 @@ function GlobalIcons({ onOpen }: { onOpen: (id: string) => void }) {
 
 function Moments({ onOpen }: { onOpen: (id: string) => void }) {
   return (
-    <section className="pb-24">
-      <div className="mx-auto max-w-[1320px] px-4 sm:px-6 lg:px-10">
-        <Reveal className="mb-8 flex flex-col gap-2">
-          <h2 className="font-display text-3xl font-extrabold tracking-tight sm:text-4xl">A drink for every moment</h2>
-          <p className="max-w-[56ch] text-[var(--muted)]">Our portfolio is built around the moments of the day, not just the products on the shelf.</p>
-        </Reveal>
-      </div>
-      <div className="moments-track" tabIndex={0} aria-label="Consumption moments">
-        {moments.map((m, i) => (
-          <motion.article
-            key={m.id}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.6, delay: i * 0.06, ease }}
-            className="moment"
-            style={{ background: m.tone }}
-          >
-            <div className="flex flex-col gap-2">
-              <h3 className="font-display text-2xl font-extrabold tracking-tight text-white">{m.title}</h3>
-              <p className="text-white/80">{m.copy}</p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {m.brandIds.map((id) => (
-                <button key={id} onClick={() => onOpen(id)} className="moment-chip">
-                  <span className="h-3 w-3 rounded-full ring-1 ring-white/50" style={{ background: byId[id].color }} />
-                  {byId[id].name}
-                </button>
-              ))}
-            </div>
-            <div className="moment-packs" aria-hidden>
-              {m.brandIds.slice(0, 3).map((id, j) => (
-                <div key={id} className="moment-badge" style={{ transform: `translateY(${j === 1 ? -12 : 0}px) rotate(${(j - 1) * 5}deg)` }}>
-                  <BrandLogo brand={byId[id]} height={40} colour className="on-white" />
-                </div>
-              ))}
-            </div>
-          </motion.article>
-        ))}
+    <section className="mx-auto max-w-[1320px] px-4 pb-24 sm:px-6 lg:px-10">
+      <Reveal className="mb-8 flex flex-col gap-2">
+        <h2 className="font-display text-3xl font-extrabold tracking-tight sm:text-4xl">A drink for every moment</h2>
+        <p className="max-w-[56ch] text-[var(--muted)]">Our portfolio is built around the moments of the day, not just the products on the shelf.</p>
+      </Reveal>
+      {/* Bento: 5 moments, 5 cells. Row 1: wide + narrow. Row 2: three equal. Mobile: one column. */}
+      <div className="moments-bento">
+        {moments.map((m, i) => {
+          const packs = m.brandIds.map((id) => byId[id]).filter((x) => heroImage(x)).slice(0, i === 0 ? 3 : 2);
+          return (
+            <motion.article
+              key={m.id}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.6, delay: i * 0.06, ease }}
+              className={`moment-cell ${i === 0 ? "is-wide" : ""}`}
+              style={{ "--tone": m.tone } as React.CSSProperties}
+            >
+              <div className="relative z-[1] flex flex-col gap-2">
+                <h3 className="font-display text-2xl font-extrabold tracking-tight">{m.title}</h3>
+                <p className="max-w-[36ch] text-white/80">{m.copy}</p>
+              </div>
+              <div className="moment-packs" aria-hidden>
+                {packs.map((x) => (
+                  <img key={x.id} src={heroImage(x)} alt="" draggable={false} />
+                ))}
+              </div>
+              <div className="relative z-[1] flex flex-wrap gap-2">
+                {m.brandIds.map((id) => (
+                  <button key={id} onClick={() => onOpen(id)} className="moment-chip">
+                    {byId[id].name}
+                  </button>
+                ))}
+              </div>
+            </motion.article>
+          );
+        })}
       </div>
     </section>
   );

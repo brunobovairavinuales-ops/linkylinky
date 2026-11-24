@@ -98,7 +98,7 @@ export function BrandPage({ id }: { id: string }) {
             </motion.p>
             <div className="flex flex-wrap gap-3">
               <a href="#contact" className="btn btn-primary btn-lg">
-                Order {b.name} <ArrowUpRight size={18} weight="bold" />
+                Contact us <ArrowUpRight size={18} weight="bold" />
               </a>
               <a href="#pictures" onClick={(e) => { e.preventDefault(); document.getElementById("pictures")?.scrollIntoView({ behavior: "smooth" }); }} className="btn btn-ghost btn-lg">
                 See pictures
